@@ -260,12 +260,14 @@ describe('--fields, in process', () => {
     'usergroups read': ['S0123456789'],
     'users info': ['U0123456789'],
   };
-  const commands = Object.keys(FIELDS_LIST_KEYS).map((path) => [path, [...path.split(' '), ...(COMMAND_ARGS[path] ?? [])]] as const);
+  // The infinite JSONL command is covered with fake transport/projection fixtures in events.test.ts.
+  const commands = Object.keys(FIELDS_LIST_KEYS).filter((path) => path !== 'events listen')
+    .map((path) => [path, [...path.split(' '), ...(COMMAND_ARGS[path] ?? [])]] as const);
 
   // One real field of each command's items (or record). A list key in
   // FIELDS_LIST_KEYS that does not match what the command prints would leave
   // the payload unprojected, and fail here.
-  const PROBE: Record<keyof typeof FIELDS_LIST_KEYS, string> = {
+  const PROBE: Record<Exclude<keyof typeof FIELDS_LIST_KEYS, 'events listen'>, string> = {
     'canvas list': 'id',
     'canvas read': 'markdown',
     'canvas sections': 'id',
@@ -295,7 +297,7 @@ describe('--fields, in process', () => {
   const SINGLE_FIELD_ITEMS = new Set(['canvas sections']);
 
   it.each(commands)('%s prints only the requested field of its items', async (path, argv) => {
-    const field = PROBE[path as keyof typeof FIELDS_LIST_KEYS];
+    const field = PROBE[path as keyof typeof PROBE];
     const full = await run([...argv, '--json']);
     stdout = '';
     const out = await run([...argv, '--json', '--fields', field]);

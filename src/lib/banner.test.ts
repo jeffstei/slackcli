@@ -34,17 +34,17 @@ describe('renderBanner', () => {
       '  Run  slackcli --help  to see all commands.',
       '',
       '  | ⭐ Like SlackCLI? Star the repo to support it!',
-      '  |    https://github.com/shaharia-lab/slackcli',
+      '  |    https://github.com/jeffstei/slackcli',
       '',
       '  Report a bug or request a feature:',
-      '  https://github.com/shaharia-lab/slackcli/issues/new/choose',
+      '  https://github.com/jeffstei/slackcli/issues/new/choose',
       '',
     ].join('\n'));
   });
 
   it('points at the repository and the issue chooser', () => {
-    expect(REPO_URL).toBe('https://github.com/shaharia-lab/slackcli');
-    expect(NEW_ISSUE_URL).toBe('https://github.com/shaharia-lab/slackcli/issues/new/choose');
+    expect(REPO_URL).toBe('https://github.com/jeffstei/slackcli');
+    expect(NEW_ISSUE_URL).toBe('https://github.com/jeffstei/slackcli/issues/new/choose');
   });
 
   it('interpolates the version it is given', () => {

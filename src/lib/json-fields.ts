@@ -26,6 +26,7 @@ export const FIELDS_LIST_KEYS = {
   'conversations unread': 'unread_channels',
   'emoji get': null,
   'emoji list': 'emoji',
+  'events listen': 'message',
   'files info': null,
   'files read': null,
   'messages list-drafts': 'drafts',

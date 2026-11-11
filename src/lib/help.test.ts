@@ -25,6 +25,12 @@ function capture(cmd: Command): { out: () => string; err: () => string } {
   return { out: () => out, err: () => err };
 }
 
+it('describes streaming JSON without claiming it is a single document', () => {
+  expect(helpNotes({ summary: 'Stream', json: '{ kind }', jsonLines: true })).toEqual([
+    'With --json, stdout is JSON Lines (one record per line): { kind }',
+  ]);
+});
+
 function helpText(cmd: Command): string {
   const io = capture(cmd);
   cmd.outputHelp();

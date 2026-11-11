@@ -47,6 +47,7 @@ where the terminal is not known to show Unicode.
 | `canvas` | List canvases, read them as Markdown, look up section IDs, create and edit them |
 | `files` | Inspect, read, and download Slack-hosted files |
 | `emoji` | List a workspace's custom emoji and inspect one |
+| `events` | Opt-in unofficial browser-session event stream (versioned JSONL) |
 | `update` | Check for and install new versions |
 | `logs` | Find, show (redacted) and delete the diagnostic log |
 
@@ -69,6 +70,7 @@ where the terminal is not known to show Unicode.
 15. [Scripting and JSON output](scripting.md)
 16. [Claude Code plugin](claude-code-plugin.md)
 17. [Troubleshooting](troubleshooting.md)
+18. [Event streaming](events.md)
 
 ## Two things that apply everywhere
 

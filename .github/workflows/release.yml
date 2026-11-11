@@ -154,6 +154,7 @@ jobs:
         run: |
           mkdir -p release
           find dist -type f \( -name 'slackcli-linux' -o -name 'slackcli-linux-arm64' -o -name 'slackcli-macos' -o -name 'slackcli-macos-arm64' -o -name 'slackcli-windows.exe' \) -exec cp {} release/ \;
+          cp THIRD_PARTY_NOTICES.txt release/
           ls -la release/
 
       - name: Generate SHA256 checksums
@@ -206,6 +207,7 @@ jobs:
 
   update-homebrew:
     name: Update Homebrew Formula
+    if: github.repository == 'shaharia-lab/slackcli'
     needs: release
     runs-on: ubuntu-latest
     # No write access to THIS repo is needed; the cross-repo write to

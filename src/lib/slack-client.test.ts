@@ -823,6 +823,16 @@ describe('SlackClient.deleteDraft', () => {
 });
 
 describe('SlackClient.postMessage', () => {
+  it('forwards the outbound correlation UUID to Slack', async () => {
+    const client = new TestSlackClient();
+    const id = 'a0b1c2d3-e4f5-4678-9012-abcdef012345';
+    await client.postMessage('C123', 'hello', { client_msg_id: id });
+    expect(client.calls[0]).toMatchObject({
+      method: 'chat.postMessage',
+      params: { client_msg_id: id },
+    });
+  });
+
   it('passes native table blocks with rich-text links to chat.postMessage', async () => {
     const client = new TestSlackClient();
     const blocks = [{

@@ -26,8 +26,8 @@ Opening an issue first gives the community the opportunity to discuss the proble
 
 A feature request (a new command, flag, option, output format or behaviour) is accepted only if it meets all of these:
 
-- **It is built on an official Slack API.** The feature uses a documented, non-deprecated method from the [Slack API reference](https://docs.slack.dev/reference/methods). Internal web-client endpoints, deprecated APIs (for example RTM) and driving the Slack web UI are not accepted: they tend to work only with browser logins and break without notice, so they cannot be maintained.
-- **It states the API and auth types.** The request names the Slack method(s) it needs and whether it works with app tokens (`xoxb`/`xoxp`), browser sessions (`xoxc`/`xoxd`) or both. The feature request template asks for both.
+- **Prefer an official Slack API.** Features normally use a documented, non-deprecated method from the [Slack API reference](https://docs.slack.dev/reference/methods). This downstream fork makes one explicit exception for the opt-in browser-session event transport tracked in #1. It uses an undocumented browser protocol, may break without notice and is not official Socket Mode or an upstream-supported feature. The exception does not permit arbitrary internal endpoints, deprecated RTM or web UI automation.
+- **It states the API and auth types.** The request names the Slack method(s) or the explicit browser-stream exception and whether it works with app tokens (`xoxb`/`xoxp`), browser sessions (`xoxc`/`xoxd`) or both. Never describe an unofficial transport as an official API.
 - **It is useful beyond one workflow.** It solves a problem a broad set of SlackCLI users have and fits what the CLI is for, not one person's particular setup.
 - **One at a time.** Keep at most one open feature request per person. Further requests may be closed until the first one is settled.
 

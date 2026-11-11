@@ -44,6 +44,7 @@ They hold no Slack API knowledge.
 | `canvas.ts` | `list`, `read`, `sections`, `create`, `edit` |
 | `conversations.ts` | `list`, `read`, `get`, `unread`, `mark-read`, `members list`/`add`/`remove`, `join`, `leave` |
 | `files.ts` | `info`, `read`, `download` |
+| `events.ts` | `listen` (explicit opt-in browser-session JSONL protocol) |
 | `logs.ts` | `path`, `show`, `clear` |
 | `messages.ts` | `send`, `react`, `unreact`, `edit`, `delete`, `draft`, `list-drafts`, `send-draft`, `delete-draft`, `schedule`, `list-scheduled`, `delete-scheduled` |
 | `saved.ts` | `list`, `add`, `update`, `complete`, `reopen`, `remove` |
@@ -57,6 +58,8 @@ They hold no Slack API knowledge.
 | `slack-client.ts` | The Slack API abstraction. Dispatches every call to `standardRequest()` or `browserRequest()` by auth type, through the shared rate limiter, retries browser-auth calls per `retry.ts`, logs each attempt's method, auth type, duration and outcome, and rethrows an authentication failure as a `SlackAuthError` (`auth-errors.ts`). A call that got no usable HTTP response throws `SlackTransportError` on both auth types. |
 | `auth.ts` | Login orchestration; returns a configured `SlackClient`. The only place that decides a token is valid, and the one place the workspace selector (`--workspace`, `SLACKCLI_WORKSPACE`, token variable, stored default) is resolved, including the env-token path (`SLACKCLI_TOKEN` / `SLACK_BOT_TOKEN` → `workspaceFromEnvToken()`, an in-memory standard workspace built from `auth.test`, nothing stored). `checkIdentity()` is the `auth whoami` lookup: one `auth.test` for the selected profile, returned as a typed `ok` / `auth_failed` / `unreachable` result that keeps the profile key. `checkAllProfiles()` runs it over every stored profile for `auth list --check`, turning any per-profile failure into a result, and `buildProfileList()` shapes the `auth list --json` object. |
 | `workspaces.ts` | Multi-workspace persistence, profile-key derivation and resolution. |
+| `events.ts` / `events-transport.ts` | Versioned JSONL envelope, selected message projection, bounded delivery and hardened Gabriel browser transport. See [events](events.md). |
+| `dpapi.ts` | Windows CurrentUser DPAPI backend under LOCALAPPDATA, integrated with existing verified credential migration. |
 | `secret-store.ts` | Credential storage seam: the `SecretStore` interface, the inline `FileSecretStore` and macOS `MacOSKeychainSecretStore` backends, `RoutingSecretStore`, and helpers that split a config into metadata and secrets. |
 | `browser-auth.ts` | Captures `xoxd`/`xoxc` from a signed-in browser; pure extractors are exported for tests. Owns `slackWorkspaceOrigin()` / `isSlackWorkspaceUrl()`, the one check on where browser credentials may be sent. |
 | `browser-launcher.ts` | Finds and launches a local Chromium-family browser; owns the profile directory. |

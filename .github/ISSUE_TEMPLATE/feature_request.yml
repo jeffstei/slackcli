@@ -12,7 +12,7 @@ body:
         likely to be rejected, even if the code is good.
 
         Features are judged against the [feature request criteria](https://github.com/shaharia-lab/slackcli/blob/main/CONTRIBUTING.md#feature-request-criteria):
-        they must be built on an official, documented, non-deprecated Slack API method, be useful
+        they must use an official API or this fork's explicit opt-in browser-stream exception, be useful
         beyond one workflow, and you may have one open feature request at a time. Requests that do
         not meet the criteria are closed.
   - type: textarea
@@ -34,7 +34,7 @@ body:
     id: slack-api
     attributes:
       label: Slack API method(s)
-      description: The official Slack API method(s) this feature needs, with a link to each in the Slack API reference. Internal web-client endpoints and deprecated APIs (such as RTM) are not accepted.
+      description: Name the documented Slack methods, or explicitly identify the downstream unofficial browser-stream exception tracked in issue 1. Other internal endpoints and deprecated RTM are not accepted.
       placeholder: "reminders.list: https://docs.slack.dev/reference/methods/reminders.list"
     validations:
       required: true
@@ -62,7 +62,7 @@ body:
       options:
         - label: I searched existing issues and this has not been requested yet.
           required: true
-        - label: This feature uses an official, documented, non-deprecated Slack API method.
+        - label: This feature uses an official documented API or explicitly identifies this fork's unofficial browser-stream exception.
           required: true
         - label: I have no other open feature request in this repository.
           required: true

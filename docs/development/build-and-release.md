@@ -23,6 +23,16 @@ A local (untargeted) build also gets `--sourcemap`; cross-compiled targets do
 not. The release workflow calls `bun build` directly with the same flags, so a
 change to them must land in both places.
 
+The wrapper invokes the running Bun executable (`process.execPath`), not a
+Windows npm command shim. Local builds include a `.licenses.txt` sidecar;
+distribute it alongside the binary. Release archives also include
+`THIRD_PARTY_NOTICES.txt`.
+
+This fork's updater targets `jeffstei/slackcli`. Build the fork locally until a
+fork release is available; an upstream binary does not contain this transport.
+Inherited Homebrew and Discord publishing jobs run only in the upstream
+repository and must not be used to publish this fork.
+
 ### Why bytecode
 
 `--bytecode` ships precompiled JavaScriptCore bytecode, so the binary skips

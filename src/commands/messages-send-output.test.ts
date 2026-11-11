@@ -99,6 +99,30 @@ describe('messages send delivered-message output', () => {
     expect(calls[1].args[0]).toBe('G0123456789');
   });
 
+  it('forwards an explicit outbound correlation UUID', async () => {
+    const id = 'a0b1c2d3-e4f5-4678-9012-abcdef012345';
+    await send(['--recipient-id', 'C0123456789', '--message', 'hi', '--client-message-id', id]);
+    expect(calls[0].args[2]).toMatchObject({ client_msg_id: id });
+  });
+
+  it('rejects invalid outbound UUIDs before resolution or writes', async () => {
+    await send(['--recipient-id', 'C0123456789', '--message', 'hi', '--client-message-id', 'not-a-uuid', '--json']);
+    expect(calls).toEqual([]);
+    expect(process.exitCode).toBe(1);
+    expect(stdout).toBe('');
+    expect(stderr).toContain('UUID');
+  });
+
+  it('refuses outbound UUIDs for unsupported file uploads', async () => {
+    await send([
+      '--recipient-id', 'C0123456789', '--message', 'hi', '--file', 'a.png',
+      '--client-message-id', 'a0b1c2d3-e4f5-4678-9012-abcdef012345', '--json',
+    ]);
+    expect(calls).toEqual([]);
+    expect(process.exitCode).toBe(1);
+    expect(stderr).toContain('--file');
+  });
+
   it('posts blocks and emits channel_id, ts and permalink under --json', async () => {
     await send(
       ['--recipient-id', 'C0123456789', '--message', 'hi', '--blocks', '[{"type":"divider"}]', '--json'],

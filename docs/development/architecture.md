@@ -216,6 +216,10 @@ metadata (`metadataOf()`) plus secrets (`storeCredentials()` /
   an FFI binding — the `cdp-client.ts` trade-off again. Its `SecurityCliRunner`
   is injectable, the same seam `cdp-client.test.ts` uses for an untestable
   transport, so it is fully unit-tested without a real Mac or keychain.
+- `WindowsDpapiSecretStore` uses CurrentUser DPAPI through a constant system
+  PowerShell script, with credential input on stdin only. Its atomic ciphertext
+  files live under `%LOCALAPPDATA%\SlackCLI\secrets`, never OneDrive.
+  Windows event listeners require this backend; migration is explicit.
 - `get` returns `null` only when a secret does not exist. A backend that is
   unavailable or refuses access throws `SecretStoreError` (`reason`
   `unavailable` / `access_denied`); a record whose secret is missing surfaces as
@@ -234,7 +238,7 @@ metadata (`metadataOf()`) plus secrets (`storeCredentials()` /
 A profile's `secret_backend` field (absent = `'file'`) says which backend its
 credentials are on. `workspaces.ts`'s `secretStoreFor()` wraps every document
 in a `RoutingSecretStore`, which re-reads that field on every call and
-dispatches to `FileSecretStore` or the Keychain store accordingly — so one
+dispatches to the file, Keychain or DPAPI store accordingly — so one
 document can hold some profiles on each backend at once, and a profile mid
 re-tag is never read from the wrong place.
 
@@ -247,7 +251,7 @@ profile back to plaintext. The only sanctioned way to change an existing
 profile's backend is `migrateWorkspaceCredentials()` /
 `auth migrate-secrets`.
 
-Migration takes explicit `{ file, keychain }` backend instances
+Migration takes explicit `{ file, keychain, dpapi }` backend instances
 (`secretBackendsFor()`), never the routing store — the routing store starts
 reading the *new* backend the instant the metadata flips mid-migration, so the
 function needs a reference to the *old* backend that survives that flip.

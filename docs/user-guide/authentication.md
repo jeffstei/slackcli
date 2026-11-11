@@ -10,6 +10,13 @@ SlackCLI supports two kinds of credentials, and four ways to obtain them.
 The auth type is stored per workspace and decides how every later request is
 made — see [architecture](../development/architecture.md#dual-authentication).
 
+On Windows, `--secret-backend dpapi` protects new-profile credentials with
+CurrentUser DPAPI under `%LOCALAPPDATA%\SlackCLI\secrets`. Migrate an existing
+profile explicitly with `auth migrate-secrets --to dpapi --profile acme`.
+Migration verifies the encrypted copy before removing inline plaintext.
+The [event listener](events.md) requires this backend on Windows. Do not move
+DPAPI files to another machine/user or place credential state on OneDrive.
+
 ## Which should I use?
 
 - You can create (or already have) a Slack app → **standard tokens**. They are

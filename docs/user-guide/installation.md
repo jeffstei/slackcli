@@ -3,6 +3,13 @@
 SlackCLI ships as a single self-contained binary. There is no runtime to install
 — you do not need Bun or Node.js to *run* it.
 
+> **Downstream streaming fork:** the upstream Homebrew and release downloads
+> below do not contain this fork's `events listen` feature. Until a release is
+> published in `jeffstei/slackcli`, clone that fork, run
+> `bun install --frozen-lockfile` and `bun run build:windows` (or the matching
+> platform build), and use its binary and license sidecar. See
+> [event streaming](events.md) for protected authentication and protocol details.
+
 ## Homebrew (macOS and Linux)
 
 ```bash

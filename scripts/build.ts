@@ -5,6 +5,7 @@
  * Example: bun run scripts/build.ts --target=bun-linux-x64 --outfile=dist/slackcli-linux
  */
 import { join } from 'node:path';
+import { copyFile } from 'node:fs/promises';
 
 /**
  * Oldest Bun that can build slackcli: the first release where `--bytecode`
@@ -50,7 +51,7 @@ async function build(): Promise<never> {
 
   const result = Bun.spawnSync(
     [
-      'bun',
+      process.execPath,
       'build',
       '--compile',
       '--minify',
@@ -70,6 +71,7 @@ async function build(): Promise<never> {
     { stdout: 'inherit', stderr: 'inherit', cwd },
   );
 
+  if (result.exitCode === 0) await copyFile(join(cwd, 'THIRD_PARTY_NOTICES.txt'), `${outfile}.licenses.txt`);
   process.exit(result.exitCode ?? 1);
 }
 

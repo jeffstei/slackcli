@@ -62,6 +62,7 @@ printf '%s' "$REPORT" | slackcli messages send --recipient-id=C1234567890 --mess
 | `--users <list>` | User IDs, `@handle`s or emails (comma- or space-separated) for a multi-person DM (group DM / MPIM). Cannot be combined with `--recipient-id` or `--permalink` |
 | `--message <text>` | Message text. **Required** unless `--message-file` is given |
 | `--message-file <path>` | Read the message text from a UTF-8 file, or from standard input with `-`; cannot be combined with `--message` |
+| `--client-message-id <uuid>` | Text-post client UUID for durable outbound echo correlation; not with `--file`. Not an exactly-once guarantee |
 | `--thread-ts <ts>` | Post as a reply in this thread |
 | `--permalink <url>` | Replaces `--recipient-id` and `--thread-ts`; a reply link posts in its parent's thread ([details](links-and-timestamps.md#--permalink)) |
 | `--file <path>` | Attach a file; the message text becomes the comment. Repeatable — pass `--file` once per attachment to share several files in one message (all-or-nothing) |

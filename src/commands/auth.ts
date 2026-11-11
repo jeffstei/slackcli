@@ -202,7 +202,7 @@ const HELP = {
   migrateSecrets: {
     summary: 'Move stored credentials to another backend',
     description:
-      'Move stored credentials between the config file and the macOS Keychain, for every profile or one. ' +
+      'Move credentials between file, macOS Keychain and Windows DPAPI, for every profile or one. ' +
       'Each copy is verified on the new backend before the old one is removed.',
     examples: [
       'slackcli auth migrate-secrets --to keychain',
@@ -211,6 +211,7 @@ const HELP = {
     confirms: true,
     notes: [
       '--to keychain is macOS only.',
+      '--to dpapi is Windows only; ciphertext is stored under LOCALAPPDATA, never OneDrive.',
       'Profiles already on the target are skipped. If an old copy could not be removed, re-run to retry.',
     ],
   },
@@ -227,12 +228,16 @@ export function resolveSecretBackend(
   value: string,
   platform: string = process.platform,
 ): SecretBackend {
-  if (value !== 'file' && value !== 'keychain') {
-    error(`--secret-backend must be "file" or "keychain" (got "${value}")`);
+  if (value !== 'file' && value !== 'keychain' && value !== 'dpapi') {
+    error(`--secret-backend must be "file", "keychain" or "dpapi" (got "${value}")`);
     process.exit(1);
   }
   if (value === 'keychain' && platform !== 'darwin') {
     error('--secret-backend keychain is only available on macOS.');
+    process.exit(1);
+  }
+  if (value === 'dpapi' && platform !== 'win32') {
+    error('--secret-backend dpapi is only available on Windows.');
     process.exit(1);
   }
   return value;
@@ -325,7 +330,7 @@ export function createAuthCommand(): Command {
     .requiredOption('--token <token>', 'Slack bot or user token')
     .requiredOption('--workspace-name <name>', 'Workspace name for identification')
     .option('--profile <name>', 'Store under a named profile (keeps multiple identities for one workspace)')
-    .option('--secret-backend <backend>', 'Where to store credentials for a NEW profile: file (default) or keychain (macOS only)', 'file')
+    .option('--secret-backend <backend>', 'NEW profile credentials: file (default), keychain (macOS) or dpapi (Windows)', 'file')
     .action(async (options) => {
       const secretBackend = resolveSecretBackend(options.secretBackend);
       const spinner = ora('Authenticating...').start();
@@ -359,7 +364,7 @@ export function createAuthCommand(): Command {
     .requiredOption('--workspace-url <url>', 'Workspace URL (e.g., https://myteam.slack.com)')
     .option('--workspace-name <name>', 'Optional workspace name for identification')
     .option('--profile <name>', 'Store under a named profile (keeps multiple identities for one workspace)')
-    .option('--secret-backend <backend>', 'Where to store credentials for a NEW profile: file (default) or keychain (macOS only)', 'file')
+    .option('--secret-backend <backend>', 'NEW profile credentials: file (default), keychain (macOS) or dpapi (Windows)', 'file')
     .action(async (options) => {
       const secretBackend = resolveSecretBackend(options.secretBackend);
       // The host the session cookie and token are sent to: refuse it before
@@ -400,7 +405,7 @@ export function createAuthCommand(): Command {
     .option('--workspace-url <url>', 'Open a specific workspace (e.g., https://myteam.slack.com)')
     .option('--headless', 'Run without a visible window (only works if already signed in)')
     .option('--timeout <seconds>', 'How long to wait for sign-in', '300')
-    .option('--secret-backend <backend>', 'Where to store credentials for a NEW profile: file (default) or keychain (macOS only)', 'file')
+    .option('--secret-backend <backend>', 'NEW profile credentials: file (default), keychain (macOS) or dpapi (Windows)', 'file')
     .action(async (options) => {
       const secretBackend = resolveSecretBackend(options.secretBackend);
       const timeoutSeconds = Number(options.timeout);
@@ -650,7 +655,7 @@ export function createAuthCommand(): Command {
     .argument('[curl-command]', 'cURL command copied from DevTools (or use --from-clipboard, stdin, or interactive paste)')
     .option('--login', 'Automatically login with extracted tokens')
     .option('--from-clipboard', 'Read cURL command from system clipboard')
-    .option('--secret-backend <backend>', 'With --login: where to store credentials for a NEW profile: file (default) or keychain (macOS only)', 'file')
+    .option('--secret-backend <backend>', 'With --login: NEW profile credentials: file, keychain (macOS) or dpapi (Windows)', 'file')
     .action(async (curlCommand, options) => {
       const secretBackend = options.login ? resolveSecretBackend(options.secretBackend) : 'file';
       try {
@@ -704,7 +709,7 @@ export function createAuthCommand(): Command {
 
   // Move stored credentials to a different SecretStore backend
   describeCommand(auth.command('migrate-secrets'), HELP.migrateSecrets)
-    .requiredOption('--to <backend>', 'Target backend: file or keychain (macOS only)')
+    .requiredOption('--to <backend>', 'Target backend: file, keychain (macOS) or dpapi (Windows)')
     .option('--profile <name>', 'Migrate only this profile (default: every configured profile)')
     .option('--yes', 'Skip the confirmation prompt', false)
     .action(async (options) => {

@@ -28,6 +28,11 @@ It takes two seconds, and it is how the next person finds SlackCLI.
 
 ---
 
+> **Downstream fork:** `jeffstei/slackcli` adds opt-in, unofficial
+> [browser-session event streaming](docs/user-guide/events.md).
+> Build this fork for that feature; upstream installation links below do not
+> provide it. Slack can change the browser protocol without notice.
+
 ## 🎬 See it in action
 
 Sign in, browse conversations, search the workspace, read a thread from a permalink,

@@ -1,5 +1,6 @@
 import { spawn } from 'node:child_process';
 import { getLogger } from '@logtape/logtape';
+import { WindowsDpapiSecretStore } from './dpapi.ts';
 import type {
   AuthType,
   SecretBackend,
@@ -369,13 +370,17 @@ export class RoutingSecretStore implements SecretStore {
   constructor(
     private readonly data: WorkspacesData,
     private readonly keychain: SecretStore = new MacOSKeychainSecretStore(),
+    private readonly dpapi: SecretStore = new WindowsDpapiSecretStore(),
   ) {}
 
   private storeFor(ref: string): SecretStore {
     const record = this.data.workspaces[ref] as { secret_backend?: SecretBackend } | undefined;
     const backend: SecretBackend = record?.secret_backend ?? 'file';
     logger.debug('Secret backend for {profile_key}: {backend}', { profile_key: ref, backend });
-    return backend === 'keychain' ? this.keychain : new FileSecretStore(this.data);
+    if (backend === 'keychain') return this.keychain;
+    if (backend === 'dpapi') return this.dpapi;
+    if (backend === 'file') return new FileSecretStore(this.data);
+    throw new SecretStoreError(String(backend), 'unavailable', 'Unknown credential backend.');
   }
 
   async get(key: string): Promise<string | null> {

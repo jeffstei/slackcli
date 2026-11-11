@@ -4,7 +4,7 @@ import { Chalk } from 'chalk';
 // Everything here is pure: the entry point passes in the version, terminal
 // width and capability flags, so every variant is testable without a terminal.
 
-export const REPO_URL = 'https://github.com/shaharia-lab/slackcli';
+export const REPO_URL = 'https://github.com/jeffstei/slackcli';
 export const NEW_ISSUE_URL = `${REPO_URL}/issues/new/choose`;
 
 // 7-bit ASCII only, so it renders the same in cmd, PowerShell and every

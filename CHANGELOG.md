@@ -7,6 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Opt-in unofficial browser-session event streaming through `events listen --json` (protocol v1 JSONL), including readiness, normalized message operations and explicit continuity gaps; Windows listeners use the new DPAPI SecretStore backend. Text sends accept client UUIDs for outbound echo correlation (#1).
+
 ## [0.19.1] - 2026-11-07
 
 ### Security

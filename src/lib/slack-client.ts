@@ -654,10 +654,12 @@ export class SlackClient {
   async postMessage(channel: string, text: string, options: {
     thread_ts?: string;
     blocks?: Array<Record<string, unknown>>;
+    client_msg_id?: string;
   } = {}): Promise<any> {
     const params: Record<string, any> = { channel, text };
     if (options.thread_ts) params.thread_ts = options.thread_ts;
     if (options.blocks) params.blocks = options.blocks;
+    if (options.client_msg_id) params.client_msg_id = options.client_msg_id;
 
     return this.request('chat.postMessage', params);
   }

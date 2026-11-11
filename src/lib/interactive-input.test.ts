@@ -55,12 +55,13 @@ describe('interactive-input', () => {
 
     describe('TTY mode (readline stubbed)', () => {
       let rl: EventEmitter & { close: () => void };
-      const originalIsTTY = process.stdin.isTTY;
+      let originalIsTTY: PropertyDescriptor | undefined;
       const spies: { mockRestore: () => void }[] = [];
 
       beforeEach(() => {
         rl = Object.assign(new EventEmitter(), { close: () => {} });
-        process.stdin.isTTY = true;
+        originalIsTTY = Object.getOwnPropertyDescriptor(process.stdin, 'isTTY');
+        Object.defineProperty(process.stdin, 'isTTY', { value: true, configurable: true });
         spies.push(
           spyOn(readline, 'createInterface').mockReturnValue(rl as unknown as readline.Interface),
           spyOn(console, 'log').mockImplementation(() => {}),
@@ -68,7 +69,8 @@ describe('interactive-input', () => {
       });
 
       afterEach(() => {
-        process.stdin.isTTY = originalIsTTY;
+        if (originalIsTTY) Object.defineProperty(process.stdin, 'isTTY', originalIsTTY);
+        else Reflect.deleteProperty(process.stdin, 'isTTY');
         while (spies.length) spies.pop()?.mockRestore();
       });
 

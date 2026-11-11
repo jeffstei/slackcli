@@ -19,6 +19,8 @@ export interface CommandHelp {
   examples?: string[];
   /** The top-level shape of the `--json` output, rendered as the first note. */
   json?: string;
+  /** Explicit streaming exception to the usual single-document JSON output. */
+  jsonLines?: boolean;
   /** Rendered as a standard note: the command needs browser session tokens. */
   browserOnly?: boolean;
   /** Rendered as a standard note: the command needs a standard app token. */
@@ -104,7 +106,9 @@ export function describeCommand(cmd: Command, help: CommandHelp): Command {
 /** The notes as rendered, standard ones first. */
 export function helpNotes(help: CommandHelp): string[] {
   const notes: string[] = [];
-  if (help.json) notes.push(`With --json, stdout is one JSON object: ${help.json}`);
+  if (help.json) notes.push(help.jsonLines
+    ? `With --json, stdout is JSON Lines (one record per line): ${help.json}`
+    : `With --json, stdout is one JSON object: ${help.json}`);
   if (help.browserOnly) notes.push(BROWSER_ONLY_NOTE);
   if (help.standardOnly) notes.push(STANDARD_ONLY_NOTE);
   if (help.confirms) notes.push(CONFIRM_NOTE);

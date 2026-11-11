@@ -11,6 +11,7 @@ import { createProgram } from './program.ts';
 // Commands that only work with browser session tokens (Slack has no app API
 // for drafts). Their help must say so.
 const BROWSER_ONLY = new Set([
+  'slackcli events listen',
   'slackcli messages list-drafts',
   'slackcli messages draft',
   'slackcli messages send-draft',

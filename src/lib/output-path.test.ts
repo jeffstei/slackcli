@@ -1,6 +1,6 @@
 import { afterAll, beforeAll, describe, expect, it } from 'bun:test';
 import { mkdtempSync, mkdirSync, realpathSync, rmSync, symlinkSync } from 'node:fs';
-import { join, resolve, sep } from 'node:path';
+import { isAbsolute, join, resolve } from 'node:path';
 import { tmpdir } from 'node:os';
 import { resolveOutputPath } from './output-path.ts';
 
@@ -50,7 +50,7 @@ describe('resolveOutputPath', () => {
     const target = resolveOutputPath('../../../home/user/.ssh/authorized_keys', workdir);
     expect(target.outside).toBe(true);
     expect(target.resolved).not.toContain('..');
-    expect(target.resolved.startsWith(sep)).toBe(true);
+    expect(isAbsolute(target.resolved)).toBe(true);
   });
 
   it('flags an absolute path outside the working directory', () => {

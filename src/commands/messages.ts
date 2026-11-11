@@ -32,6 +32,7 @@ import { resolveMessageText } from '../lib/message-input.ts';
 import { parseScheduleTime } from '../lib/schedule-time.ts';
 import { deleteMessage, removeReaction } from '../lib/message.ts';
 import { resolvePostThread } from '../lib/thread-parent.ts';
+import { validateClientMessageId } from '../lib/events.ts';
 
 // Help text shared by several commands below.
 const THREAD_TS_NOTE =
@@ -85,6 +86,7 @@ const HELP = {
       '{ channel_id, file_id, file_ids } with --file (file_id is the first of file_ids). ' +
       'permalink is omitted when its lookup fails. channel_id is always the resolved ID.',
     notes: [
+      '--client-message-id takes a UUID for text-post echo correlation; it is not an exactly-once delivery guarantee.',
       RECIPIENT_NOTE,
       CHANNEL_NAME_NOTE,
       USER_NAME_NOTE,
@@ -640,10 +642,12 @@ async function postText(
   target: ResolvedThreadTarget,
   json: boolean,
   spinner: ReturnType<typeof ora>,
+  clientMessageId?: string,
 ): Promise<void> {
   const response = await client.postMessage(channelId, message, {
     thread_ts: target.threadTs,
     blocks,
+    ...(clientMessageId ? { client_msg_id: clientMessageId } : {}),
   });
 
   spinner.succeed('Message sent successfully!');
@@ -695,6 +699,7 @@ export function createMessagesCommand(): Command {
     // structured `invalid_input` object (not Commander's plain-text conflict).
     .option('--users <list>', 'User IDs, @handles or emails (comma- or space-separated) for a multi-person DM (group DM / MPIM)')
     .option('--message <text>', 'Message text content')
+    .option('--client-message-id <uuid>', 'Client UUID for text-post echo correlation (not with --file)')
     .addOption(
       new Option('--message-file <path>', 'Read the message text from a UTF-8 file, or stdin with -')
         .conflicts('message')
@@ -719,6 +724,8 @@ export function createMessagesCommand(): Command {
       const spinner = ora('Sending message...').start();
 
       try {
+        const clientMessageId = validateClientMessageId(options.clientMessageId);
+        if (clientMessageId && options.file) throw new InvalidInputError('--client-message-id cannot be used with --file.');
         const message = await resolveMessageText(options);
         const blocks = options.blocks ? await parseBlocksInput(options.blocks) : undefined;
 
@@ -741,7 +748,7 @@ export function createMessagesCommand(): Command {
           return;
         }
 
-        await postText(client, channelId, message, blocks, target, options.json, spinner);
+        await postText(client, channelId, message, blocks, target, options.json, spinner, clientMessageId);
       } catch (err: any) {
         failCommand(err, { json: options.json, spinner, context: 'Failed to send message' });
       }

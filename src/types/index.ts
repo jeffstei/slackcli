@@ -7,7 +7,7 @@ export type ConversationType = 'public_channel' | 'private_channel' | 'mpim' | '
 // Which SecretStore backend (src/lib/secret-store.ts) a profile's credentials
 // live in. Absent on a record means 'file' — the only backend that existed
 // before #219, so every pre-existing workspaces.json stays valid unchanged.
-export type SecretBackend = 'file' | 'keychain';
+export type SecretBackend = 'file' | 'keychain' | 'dpapi';
 
 // Workspace configuration interfaces
 export interface StandardAuthConfig {

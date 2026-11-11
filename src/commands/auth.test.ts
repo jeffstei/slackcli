@@ -37,6 +37,21 @@ describe('resolveSecretBackend', () => {
     expect(resolveSecretBackend('keychain', 'darwin')).toBe('keychain');
   });
 
+  it('accepts DPAPI only on Windows', () => {
+    expect(resolveSecretBackend('dpapi', 'win32')).toBe('dpapi');
+  });
+
+  it('refuses DPAPI off Windows instead of falling back to plaintext', () => {
+    const exit = spyOn(process, 'exit').mockImplementation(() => { throw new Error('exit'); });
+    const error = spyOn(console, 'error').mockImplementation(() => {});
+    try {
+      for (const platform of ['darwin', 'linux']) {
+        expect(() => resolveSecretBackend('dpapi', platform)).toThrow('exit');
+      }
+      expect(exit).toHaveBeenCalledWith(1);
+    } finally { exit.mockRestore(); error.mockRestore(); }
+  });
+
   it('exits with a clear message for an unrecognised value', () => {
     const exitSpy = mock(() => { throw new Error('exit'); });
     const original = process.exit;

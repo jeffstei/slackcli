@@ -18,6 +18,7 @@ import {
 } from './secret-store.ts';
 import { warning } from './formatter.ts';
 import { CliError, InvalidInputError, NotFoundError } from './cli-errors.ts';
+import { WindowsDpapiSecretStore } from './dpapi.ts';
 
 const logger = getLogger(['slackcli', 'workspaces']);
 
@@ -428,6 +429,7 @@ export async function addWorkspace(
 export interface SecretBackends {
   file: SecretStore;
   keychain: SecretStore;
+  dpapi: SecretStore;
 }
 
 // Build the concrete backend pair for a loaded document. `keychain` may be
@@ -435,8 +437,9 @@ export interface SecretBackends {
 export function secretBackendsFor(
   data: WorkspacesData,
   keychain: SecretStore = new MacOSKeychainSecretStore(),
+  dpapi: SecretStore = new WindowsDpapiSecretStore(),
 ): SecretBackends {
-  return { file: new FileSecretStore(data), keychain };
+  return { file: new FileSecretStore(data), keychain, dpapi };
 }
 
 export interface MigrationResult {

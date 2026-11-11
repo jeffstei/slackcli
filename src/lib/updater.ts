@@ -39,7 +39,7 @@ interface UpdateCache {
   failedAt?: number;
 }
 
-const GITHUB_REPO = 'shaharia-lab/slackcli';
+const GITHUB_REPO = 'jeffstei/slackcli';
 const CURRENT_VERSION = getAppVersion();
 
 interface GitHubRelease {
